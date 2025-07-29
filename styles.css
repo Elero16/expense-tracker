@@ -7,6 +7,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  position: relative; /* Для абсолютного позиционирования картинок */
 }
 
 .container {
@@ -99,4 +100,21 @@ td button:hover {
 
 #chart {
   margin-top: 20px;
+}
+
+/* Стили для картинок */
+.top-right-image {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 80px;
+  height: auto;
+}
+
+.bottom-left-image {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 80px;
+  height: auto;
 }
