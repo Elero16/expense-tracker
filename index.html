@@ -3,77 +3,141 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Трекер расходов</title>
+  <title>Трекер расходов с календарем</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Картинка в правом верхнем углу -->
-  <img src="netmonet.png" alt="монеты" class="top-right-image">
+  <!-- Картинки в углах -->
+  <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%23667eea' opacity='0.3'/%3E%3Ccircle cx='30' cy='30' r='10' fill='%23764ba2' opacity='0.5'/%3E%3Ccircle cx='70' cy='70' r='15' fill='%23667eea' opacity='0.5'/%3E%3C/svg%3E" alt="Монеты" class="top-right-image">
+  <img src="image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='20' y='20' width='60' height='40' fill='%23764ba2' opacity='0.3' rx='5'/%3E%3Crect x='30' y='30' width='40' height='20' fill='%23667eea' opacity='0.5' rx='3'/%3E%3C/svg%3E" alt="Банкноты" class="bottom-left-image">
 
-  <!-- Контейнер с содержимым -->
   <div class="container">
-    <h1>Трекер расходов</h1>
-
-    <!-- Форма для добавления трат -->
-    <form id="expense-form">
-      <label for="amount">Сумма:</label>
-      <input type="number" id="amount" name="amount" required>
-
-      <label for="category">Категория:</label>
-      <select id="category" name="category" required>
-        <option value="еда">Еда</option>
-        <option value="транспорт">Транспорт</option>
-        <option value="развлечения">Развлечения</option>
-        <option value="дом">Дом</option>
-        <option value="здоровье">Здоровье</option>
-        <option value="другое">Другое</option>
-      </select>
-
-      <label for="description">Описание:</label>
-      <input type="text" id="description" name="description">
-
-      <button type="submit">Добавить</button>
-    </form>
-
-    <!-- Общая сумма -->
-    <div id="total-expense">
-      <h2>Общая сумма: <span id="total-amount">0</span></h2>
+    <div class="header">
+      <h1>💰 Трекер расходов</h1>
+      <p>Отслеживайте свои траты по дням и периодам</p>
     </div>
 
-    <!-- Фильтр по категориям -->
-    <div id="filter-container">
-      <label for="filter-category">Фильтр по категории:</label>
-      <select id="filter-category">
-        <option value="all">Все</option>
-        <option value="еда">Еда</option>
-        <option value="транспорт">Транспорт</option>
-        <option value="развлечения">Развлечения</option>
-        <option value="дом">Дом</option>
-        <option value="здоровье">Здоровье</option>
-        <option value="другое">Другое</option>
-      </select>
+    <!-- Навигация по датам -->
+    <div class="controls">
+      <div class="date-navigation">
+        <button class="nav-btn" id="prevMonth">← Предыдущий месяц</button>
+        <div class="current-date" id="currentDate">Январь 2024</div>
+        <button class="nav-btn" id="nextMonth">Следующий месяц →</button>
+      </div>
     </div>
 
-    <!-- Таблица трат -->
-    <table id="expenses-table">
-      <thead>
-        <tr>
-          <th>Сумма</th>
-          <th>Категория</th>
-          <th>Описание</th>
-          <th>Дата</th>
-          <th>Удалить</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <!-- Календарь -->
+    <div class="calendar-container">
+      <div class="calendar-header">
+        <div>Пн</div>
+        <div>Вт</div>
+        <div>Ср</div>
+        <div>Чт</div>
+        <div>Пт</div>
+        <div>Сб</div>
+        <div>Вс</div>
+      </div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
 
-    <!-- График (опционально) -->
-    <canvas id="chart"></canvas>
+    <!-- Форма добавления расходов -->
+    <div class="expense-form">
+      <h2 class="form-title">➕ Добавить расход</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="expenseDate">Дата:</label>
+          <input type="date" id="expenseDate" required>
+        </div>
+        <div class="form-group">
+          <label for="expenseAmount">Сумма (₽):</label>
+          <input type="number" id="expenseAmount" step="0.01" min="0" required>
+        </div>
+        <div class="form-group">
+          <label for="expenseCategory">Категория:</label>
+          <select id="expenseCategory" required>
+            <option value="">Выберите категорию</option>
+            <option value="еда">Еда</option>
+            <option value="транспорт">Транспорт</option>
+            <option value="развлечения">Развлечения</option>
+            <option value="дом">Дом</option>
+            <option value="здоровье">Здоровье</option>
+            <option value="одежда">Одежда</option>
+            <option value="путешествия">Путешествия</option>
+            <option value="другое">Другое</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="expenseDescription">Описание:</label>
+        <textarea id="expenseDescription" placeholder="Что вы купили?"></textarea>
+      </div>
+      <button class="submit-btn" id="addExpenseBtn">Добавить расход</button>
+    </div>
+
+    <!-- Фильтры -->
+    <div class="filter-section">
+      <h2 class="filter-title">🔍 Фильтры</h2>
+      <div class="filter-controls">
+        <div class="form-group">
+          <label for="filterCategory">Категория:</label>
+          <select id="filterCategory">
+            <option value="">Все категории</option>
+            <option value="еда">Еда</option>
+            <option value="транспорт">Транспорт</option>
+            <option value="развлечения">Развлечения</option>
+            <option value="дом">Дом</option>
+            <option value="здоровье">Здоровье</option>
+            <option value="одежда">Одежда</option>
+            <option value="путешествия">Путешествия</option>
+            <option value="другое">Другое</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="startDate">С даты:</label>
+          <input type="date" id="startDate">
+        </div>
+        <div class="form-group">
+          <label for="endDate">По дату:</label>
+          <input type="date" id="endDate">
+        </div>
+      </div>
+    </div>
+
+    <!-- Сводка -->
+    <div class="summary">
+      <div class="summary-card">
+        <h3>Общая сумма</h3>
+        <div class="amount" id="totalAmount">0 ₽</div>
+      </div>
+      <div class="summary-card">
+        <h3>Средний расход в день</h3>
+        <div class="amount" id="averageAmount">0 ₽</div>
+      </div>
+      <div class="summary-card">
+        <h3>Количество трат</h3>
+        <div class="amount" id="expenseCount">0</div>
+      </div>
+    </div>
+
+    <!-- Список расходов -->
+    <div class="expenses-list">
+      <h2 class="list-title">📋 Все расходы</h2>
+      <table class="expenses-table">
+        <thead>
+          <tr>
+            <th>Дата</th>
+            <th>Категория</th>
+            <th>Сумма</th>
+            <th>Описание</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody id="expensesTableBody">
+          <!-- Расходы будут добавлены сюда -->
+        </tbody>
+      </table>
+    </div>
   </div>
-
-  <!-- Картинка в левом нижнем углу -->
-  <img src="$мани.png" alt="Банкноты" class="bottom-left-image">
 
   <script src="script.js"></script>
 </body>
